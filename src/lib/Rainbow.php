@@ -31,7 +31,7 @@ class Rainbow {
     }
 
     public function initialize(): bool {
-        $returns = true;
+        $r = true;
 
         $q = <<<'EOT'
 create table if not exists `algos` (
