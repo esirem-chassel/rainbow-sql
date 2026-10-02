@@ -27,6 +27,8 @@ class SQL {
                 Env::getInstance()->get('db.writer.dsn'),
                 Env::getInstance()->get('db.writer.user'),
                 Env::getInstance()->get('db.writer.pwd'));
+        } else {
+            throw new \Exception('Unable to start : missing configuration');
         }
     }
 
@@ -58,27 +60,34 @@ class SQL {
 
     public function ql(string $query, string $key, array $args = []): array {
         $r = [];
-        try {
-            $s = $this->execRead($query, $args);
-            while($l = $s->fetch(\PDO::FETCH_ASSOC)) {
-                if(array_key_exists($key, $l)) {
-                    $r[] = $l[$key];
-                }
+        $s = $this->execRead($query, $args);
+        while($l = $s->fetch(\PDO::FETCH_ASSOC)) {
+            if(array_key_exists($key, $l)) {
+                $r[] = $l[$key];
             }
-        } catch(\Throwable $e){}
+        }
         return $r;
     }
 
     public function qk(string $query, string $key, string $kval, array $args = []): array {
         $r = [];
-        try {
-            $s = $this->execRead($query, $args);
-            while($l = $s->fetch(\PDO::FETCH_ASSOC)) {
-                if(array_key_exists($key, $l) && array_key_exists($kval, $l)) {
-                    $r[$key] = $l[$kval];
-                }
+        $s = $this->execRead($query, $args);
+        while($l = $s->fetch(\PDO::FETCH_ASSOC)) {
+            if(array_key_exists($key, $l) && array_key_exists($kval, $l)) {
+                $r[$l[$key]] = $l[$kval];
             }
-        } catch(\Throwable $e){}
+        }
+        return $r;
+    }
+
+    public function qo(string $query, string $key, array $args = []): mixed {
+        $r = null;
+        $s = $this->execRead($query, $args);
+        if($l = $s->fetch(\PDO::FETCH_ASSOC)) {
+            if(array_key_exists($key, $l)) {
+                $r = $l[$key];
+            }
+        }
         return $r;
     }
 }

@@ -7,25 +7,30 @@ class Logger {
     const STDOUT = ':stdout:';
 
     protected static $instances = [];
-    public static function getInstance(string $channel) {
+    public static function getInstance(string $channel): static {
         if(!array_key_exists($channel, static::$instances)) {
             static::$instances[$channel] = new Logger($channel);
         }
         return static::$instances[$channel];
     }
 
-    protected ?string $channel = null;
-    protected function __construct(string $channel) {
-        $this->channel = preg_replace('`[^a-zA-Z0-9_\-\.]`u', '', $channel);
+    public static function instant(string $toWrite): static {
+        return static::getInstance(Env::getInstance()->get('logger', static::STDOUT))->write($toWrite);
     }
 
-    public function write(string $str) {
+    protected ?string $channel = null;
+    protected function __construct(string $channel) {
+        $this->channel = preg_replace('`[^a-zA-Z0-9_\-:\.]`u', '', $channel);
+    }
+
+    public function write(string $str): static {
         $tw = '['.date('Y-m-d H:i:s').'] '.$str.PHP_EOL;
         if(static::STDOUT == $this->channel) {
             echo $tw;
         } else {
-
+            $this->writeInFile($str);
         }
+        return $this;
     }
 
     public function getLogsDir(): string {
@@ -34,15 +39,16 @@ class Logger {
     }
 
     public function getLogsFile(): string {
-        $fn = 'logs-'.$this->channel.'.log';
+        $fn = preg_replace('`[^a-zA-Z0-9_\-]`u', '', $this->channel).'-'.date('Y-m').'.log';
         return $this->getLogsDir().'/'.$fn;
     }
 
-    protected function writeInFile(string $str) {
+    protected function writeInFile(string $str): static {
         $fh = fopen($this->getLogsFile(), 'a+');
         if(false !== $fh) {
             fwrite($fh, $str);
             fclose($fh);
         }
+        return $this;
     }
 }

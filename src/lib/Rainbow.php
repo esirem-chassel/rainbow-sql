@@ -13,19 +13,23 @@ class Rainbow {
 
     #[Override]
     protected function __construct() {
-        
+        $this->start();
     }
 
     protected function start() {
+        Logger::instant('Starting app');
         $q = 'select `k`, `method` from `algos`';
         try {
             $this->supportedAlgos = SQL::getInstance()->qk($q, 'k', 'method');
+            SQL::getInstance()->execRead('select * from `rainbow` limit 1');
         } catch(\Throwable $e) { // does not exists, prolly
+            Logger::instant('App is not initialized yet, initializing');
             if($this->initialize() && !$this->isStarted) {
                 $this->isStarted = true;
                 $this->start();
             } else {
-                throw new Exception('Error while registering supported algo');
+                Logger::instant('Error while registering supported algos');
+                throw new Exception('Error while registering supported algos');
             }
         }
     }
@@ -47,7 +51,7 @@ create table if not exists `rainbow` (
     `clear` varchar(50) not null,
     `algo` varchar(20) not null,
     `value` text not null,
-    primary key (`clear`, `algo`)
+    primary key (`clear`, `algo`),
     constraint `fk_rainbow_algo`
     foreign key (`algo`)
     references `algos`(`k`)
@@ -76,9 +80,12 @@ EOT;
 
     protected function rdm() {
         $r = '';
-        $st = ord('!'); // ! is the first printable ascii char, we'll keep it simple, stupid
-        for($i = 5; $i < 5+mt_rand(1, 10); $i++) {
-            $r += chr($st+94); // there are 95 printable characters in ascii
+        $st = mb_ord('!'); // ! is the first printable ascii char, we'll keep it simple, stupid... but unicode
+        $mn = 5;
+        $ln = 5+mt_rand(1, 10);
+        for($i = $mn; $i < $ln; $i++) {
+            $s = $st+mt_rand(0, 93);
+            $r .= mb_chr($s); // there are 95 printable characters in ascii / UTF-8
         }
         return $r;
     }
@@ -93,7 +100,7 @@ EOT;
         foreach($this->getSupportedAlgos() as $ak => $am) {
             $i++;
             $h = hash($am, $rdm);
-            $qa['a'.$i] = $am;
+            $qa['a'.$i] = $ak;
             $qa['h'.$i] = $h;
             $entries[] = '(:clear, :a'.$i.', :h'.$i.')';
         }
@@ -102,5 +109,14 @@ EOT;
                 (`clear`, `algo`, `value`)
                 values '.implode(', ', $entries).'', $qa);
         }
+    }
+
+    public function searchHash(string $hash) {
+        return SQL::getInstance()->qf('select * from `rainbow` where `value`=:h', ['h' => $hash,]);
+    }
+
+    public function getTotalCount():int {
+        $r = SQL::getInstance()->qo('select count(*) as nb from `rainbow`', 'nb');
+        return empty($r)? 0:intval($r);
     }
 }
