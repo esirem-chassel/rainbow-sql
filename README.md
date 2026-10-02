@@ -56,4 +56,4 @@ Configurez votre crontab pour exécuter régulièrement (conseillé : toutes les
 
 L'interface web ne permet que de rechercher un hash, afin d'obtenir les collisions selon les algorithmes en place.
 
-Il est possible de forcer la génération des hashs sur tous les algorithmes gérés en appellant manuellement `php -f generate.php <clear>` en remplaçant `<clear>` par la chaîne désirée.
+Il est possible de forcer la génération des hashs sur tous les algorithmes gérés en appellant manuellement `php -f bin/generate.php <clear>` en remplaçant `<clear>` par la chaîne désirée.
