@@ -90,16 +90,15 @@ EOT;
         return $r;
     }
 
-    public function generateOne() {
-        $rdm = $this->rdm();
+    protected function hashAndSave(string $clear): static {
         $qa = [
-            'clear' => $rdm,
+            'clear' => $clear,
         ];
         $entries = [];
         $i = 0;
         foreach($this->getSupportedAlgos() as $ak => $am) {
             $i++;
-            $h = hash($am, $rdm);
+            $h = hash($am, $clear);
             $qa['a'.$i] = $ak;
             $qa['h'.$i] = $h;
             $entries[] = '(:clear, :a'.$i.', :h'.$i.')';
@@ -109,9 +108,19 @@ EOT;
                 (`clear`, `algo`, `value`)
                 values '.implode(', ', $entries).'', $qa);
         }
+        return $this;
     }
 
-    public function searchHash(string $hash) {
+    public function generateOne(): static {
+        $rdm = $this->rdm();
+        return $this->hashAndSave($rdm);
+    }
+
+    public function generateFixed(string $clear): static {
+        return $this->hashAndSave($clear);
+    }
+
+    public function searchHash(string $hash): array {
         return SQL::getInstance()->qf('select * from `rainbow` where `value`=:h', ['h' => $hash,]);
     }
 

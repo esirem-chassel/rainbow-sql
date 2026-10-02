@@ -1,9 +1,9 @@
 <?php
-
 require_once __DIR__ . '/../src/includer.php';
 
 use App\Rainbow\lib\Rainbow;
 
+ob_start();
 $totalNb = Rainbow::getInstance()->getTotalCount();
 $algos = Rainbow::getInstance()->getSupportedAlgos();
 
@@ -13,6 +13,7 @@ if (!empty($_REQUEST['search']) && !empty($_REQUEST['hash'])) {
     $searchedHash = trim(strval($_REQUEST['hash']));
     $results = Rainbow::getInstance()->searchHash($searchedHash);
 }
+ob_end_clean();
 
 ?>
 <!doctype html>
