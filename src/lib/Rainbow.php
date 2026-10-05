@@ -78,12 +78,12 @@ EOT;
         return $this->supportedAlgos;
     }
 
-    protected function rdm() {
+    protected function rdm(int $min = 5, int $max = 15) {
+        if($min >= $max) { throw new \Exception('Min cannot be greater than max'); }
         $r = '';
         $st = mb_ord('!'); // ! is the first printable ascii char, we'll keep it simple, stupid... but unicode
-        $mn = 5;
-        $ln = 5+mt_rand(1, 10);
-        for($i = $mn; $i < $ln; $i++) {
+        $ln = $min+mt_rand(1, ($max - $min));
+        for($i = $min; $i < $ln; $i++) {
             $s = $st+mt_rand(0, 93);
             $r .= mb_chr($s); // there are 95 printable characters in ascii / UTF-8
         }
@@ -114,6 +114,13 @@ EOT;
     public function generateOne(): static {
         $rdm = $this->rdm();
         return $this->hashAndSave($rdm);
+    }
+
+    public function massGenerate(int $nb): static {
+        for($i = 0; $i < $nb; $i++) {
+            $this->generateOne();
+        }
+        return $this;
     }
 
     public function generateFixed(string $clear): static {
