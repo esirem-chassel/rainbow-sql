@@ -54,6 +54,12 @@ Le fichier de configuration `.env` est à créer et remplir sur la base du fichi
 
 L'instance SQL `writer` correspond au serveur SQL **principal**, tandis que l'instance SQL `reader` correspond à la réplique locale.
 
+`dsn` (pour `Data Source Name`) correspond à la chaîne de connexion composée de : `<SGBDR>:host=<host>;dbname=<dbname>` avec respectivement `<SGBR>` le type de bases de données, `<host>` le nom d'hôte (facultatif) et `<dbname>` le nom de la base de données.
+
+Un exemple pourrait être `mysql:host=localhost;dbname=testdb`.
+
+Au premier lancement (web ou CLI), l'application va automatiquement se connecter à la base spécifiée avec les identifiants indiqués, et va créer d'elle-même les tables nécessaires.
+
 ### Crontab / Tâche programmée
 
 L'instance peut générer des enregistrements dans la base, et doit le faire de façon périodique.
