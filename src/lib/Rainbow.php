@@ -10,8 +10,7 @@ class Rainbow {
 
     protected array $supportedAlgos = [];
     protected bool $isStarted = false;
-
-    #[Override]
+    
     protected function __construct() {
         $this->start();
     }

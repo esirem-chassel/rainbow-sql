@@ -9,7 +9,6 @@ class Env {
 
     const PATH = '.env';
 
-    #[Override]
     protected function __construct() {
         $fn = __DIR__.'/../../'.static::PATH;
         $envs = file($fn);

@@ -11,7 +11,6 @@ class SQL {
     protected ?\PDO $sqlWriter = null;
     protected ?\PDO $sqlReader = null;
 
-    #[Override]
     protected function __construct() {
         if(Env::getInstance()->has('db.writer.dsn')
             && Env::getInstance()->has('db.writer.user')
