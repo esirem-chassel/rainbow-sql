@@ -18,6 +18,10 @@ Il est nécessaire, en plus de l'outil, d'avoir installé un serveur web (`nginx
 
 Une version de `PHP 8.1+` est nécessaire, et le plugin `pdo_mysql` doit être activé (ce qui est normalement le cas par défaut).
 
+> [!Note]
+> Depuis quelques versions, il est possible que `php-mysql` et `php-mbstring` ne soient plus installés par défaut.
+> Si c'est votre cas, pensez à les installer manuellement.
+
 ### Configuration Web
 
 Indiquez dans votre VHost (apache ou nginx) le répertoire `public`.
